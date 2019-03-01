@@ -1,1 +1,1 @@
-The multi-thread programming changed after C++ 11.
+In this folder, all code are written in C++ 11.
