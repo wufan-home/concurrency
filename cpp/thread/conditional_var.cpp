@@ -14,13 +14,13 @@ void thread_fn(int n)
     cout << "Enter the thread " << n << endl;
     while(1)
     {
-    ¦   if(g_mutex.try_lock())
-    ¦   {
-    ¦   ¦   this_thread::sleep_for(chrono::seconds(n));
-    ¦   ¦   cout << "The thread " << n << " change the value: "<< ++g_value << endl;
-    ¦   ¦   g_mutex.unlock();
-    ¦   ¦   break;
-    ¦   }
+        if(g_mutex.try_lock())
+        {
+            this_thread::sleep_for(chrono::seconds(n));
+            cout << "The thread " << n << " change the value: "<< ++g_value << endl;
+            g_mutex.unlock();
+            break;
+        }
     }
 }
 
