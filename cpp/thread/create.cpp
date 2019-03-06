@@ -8,7 +8,11 @@ using namespace std;
 
 struct ThreadParameter
 {
-    ThreadParameter(vector<int> *shared, int *index, const string& thread_name) : m_shared(shared), m_size(shared->size()), m_current(index), m_thread_name(thread_name){}
+    ThreadParameter(vector<int> *shared, int *index, const string& thread_name) 
+        : m_shared(shared), 
+          m_size(shared->size()), 
+          m_current(index), 
+          m_thread_name(thread_name){}
 
     vector<int> *m_shared;
     int m_size;
@@ -21,7 +25,9 @@ void thread_fn(void *param)
     ThreadParameter *l_param = (ThreadParameter *) param;
     while (*(l_param->m_current) < l_param->m_size)
     {
-    ¦   printf("This is the thread %s, show the value at index %d. \n", l_param->m_thread_name.c_str(), ++(*(l_param->m_current)));
+        printf("This is the thread %s, show the value at index %d. \n", 
+               l_param->m_thread_name.c_str(), 
+               ++(*(l_param->m_current)));
     }
 }
 
