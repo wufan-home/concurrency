@@ -19,6 +19,12 @@ Show the usage of mutex. The basic usage of mutex is first to call ```try_lock``
 **racing_condition.cpp**: [code](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/racing_condition.cpp) <br>
 Give an example of racing condition. The sample output can be found in [output]().
 
+**reentrant_lock.cpp**: [code]() <br>
+
+**rw_lock**: [code]() <br>
+
+**scoped_lock.cpp**: [code]() <br>
+
 **shared_lock.cpp**: [code]() <br>
 Show the usage of shared_lock.
 
