@@ -4,52 +4,57 @@
 #include <thread>
 #include <vector>
 
+extern "C"
+{
+    #include <stdio.h>
+}
+
+#define g_size 100
+#define num_of_thread 3
+
 using namespace std;
 
-struct ThreadParameter
+struct ConcurrentList
 {
-    ThreadParameter(vector<int> *shared, int *index, const string& thread_name) 
-        : m_shared(shared), 
-          m_size(shared->size()), 
-          m_current(index), 
-          m_thread_name(thread_name){}
+    explicit ConcurrentList(int length) : 
+        m_list(vector<int>(length, 1)), 
+        m_current(0) {}
 
-    vector<int> *m_shared;
-    int m_size;
-    int *m_current;
-    string m_thread_name;
+    vector<int> m_list;
+    int m_current;
 };
 
-void thread_fn(void *param)
+void thread_func(ConcurrentList &l, const string &thread_id)
 {
-    ThreadParameter *l_param = (ThreadParameter *) param;
-    while (*(l_param->m_current) < l_param->m_size)
-    {
-        printf("This is the thread %s, show the value at index %d. \n", 
-               l_param->m_thread_name.c_str(), 
-               ++(*(l_param->m_current)));
-    }
+    while (l.m_current < l.m_list.size())
+        printf("The thread %s moved the index %d.\n", thread_id.c_str(), l.m_current++);
+}
+
+void thread_func_cpp(ConcurrentList &l, const string &thread_id)
+{
+    while(l.m_current < l.m_list.size())
+        cout << "(C++) The thread " << thread_id << " moved the index " << l.m_current++ << endl;
 }
 
 int main()
 {
     cout << "This is the program to show how to create a thread in C++ 11." << endl;
 
-    vector<int> shared(100, 1);
-    int index = 0;
+    ConcurrentList cl(g_size);
 
-    ThreadParameter param1(&shared, &index, "first");
-    thread t1(thread_fn, &param1);
-
-    ThreadParameter param2(&shared, &index, "second");
-    thread t2(thread_fn, &param2);
-
-    ThreadParameter param3(&shared, &index, "third");
-    thread t3(thread_fn, &param3);
+    thread t1(thread_func, std::ref(cl), "writer");
+    thread t2(thread_func, std::ref(cl), "reader");
 
     t1.join();
     t2.join();
-    t3.join();
 
+    cl.m_current = 0;
+
+    thread t3(thread_func_cpp, std::ref(cl), "writer");
+    thread t4(thread_func_cpp, std::ref(cl), "reader");
+
+    t3.join();
+    t4.join();
+    
     return 1;
 }
