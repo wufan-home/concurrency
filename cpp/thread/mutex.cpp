@@ -1,87 +1,64 @@
 #include <chrono>
 #include <iostream>
 #include <mutex>
-extern "C"
-{
-    #include <stdio.h> 
-}
 #include <string>
 #include <thread>
 #include <vector>
 
+extern "C"
+{
+    #include <stdio.h>
+}
+
+std::mutex g_mutex;
+
+#define g_size 20
+#define num_of_thread 2
+
 using namespace std;
 
-#define thread_num 2
-#define memeory_size 10
-#define sleep_second 3
-
-mutex g_mutex;  // Global lock.
-
-class Param
+struct ConcurrentList
 {
-public:
-    Param(vector<int> *shared_memory, int *p_index, const string &thread_name): 
-        m_thread_name(thread_name),
-        m_shared_memory(shared_memory), 
-        m_size(shared_memory->size()),
-        m_current(p_index) {} 
+    explicit ConcurrentList(int length) : 
+        m_list(vector<int>(length, 1)), 
+        m_current(0) {}
 
-    const string m_thread_name;
-    vector<int> *m_shared_memory;
-    int m_size;
-    int *m_current;
+    vector<int> m_list;
+    volatile int m_current;
 };
 
-void thread_func(void *param)
+void thread_func(ConcurrentList &l, const string &thread_id)
 {
-    Param *pm = (Param *)param;
+    while(l.m_current < l.m_list.size())
+    { 
+        if (g_mutex.try_lock())
+        {
+//        printf("The current index is %d reading by the thread %s. \n", l.m_current, thread_id.c_str());
+//            this_thread::sleep_for(chrono::seconds(1));
 
-    printf("Enter the %s thread.\n", pm->m_thread_name.c_str());
-    
-    while(1)
-    {
-        if(g_mutex.try_lock())
-        {
-//            this_thread::sleep_for(chrono::seconds(1)); 
-//            Do not let a thread sleep in a loop.
-//            Sleep will force the current thread to yield to other threads.
-//            (Neet more investigations.)
-            
-            if (*(pm->m_current) < pm->m_size)
-            {
-                printf("The %s thread read the %d th element from the shared memeory\n", pm->m_thread_name.c_str(), *(pm->m_current));
-                *(pm->m_current) += 1;
-                g_mutex.unlock();
-            }
-            else
-            {
-                g_mutex.unlock();
-                break;
-            }
-        }
-        else
-        {
-//            printf("The %s thread did not get the lock.\n", pm->m_thread_name.c_str());
+            // printf("The index %d is moved by the thread %s to be %d.\n", l.m_current++, thread_id.c_str(), l.m_current);
+//            printf("The index %d is moved by the thread %s ", l.m_current, thread_id.c_str());
+  //          printf("to be %d.\n", ++l.m_current);
+  //
+            cout << "Original value " << l.m_current << " by thread " << thread_id ;
+            cout << " to be "<< ++l.m_current << endl;
+            g_mutex.unlock();
         }
     }
 }
 
 int main()
 {
-    cout << "This program shows how to use mutex to sync." << endl;
+    cout << "This is the program to show how to create a thread in C++ 11." << endl;
 
-    vector<int> shared_memory(memeory_size, 0);
-    int index = 0;
+    ConcurrentList cl(g_size);
 
-    Param *p1 = new Param(&shared_memory, &index, "reader");
-    thread writer_t(thread_func, p1);
+    thread th_list[num_of_thread];
+    for(int i = 0; i < num_of_thread; ++i)
+        th_list[i] = thread(thread_func, std::ref(cl), string(1, '0' + i));
 
-    Param *p2 = new Param(&shared_memory, &index, "writer");
-    thread reader_t(thread_func, p2);
+    for(int i = 0; i < num_of_thread; ++i)
+        th_list[i].join();
 
-    writer_t.join();
-    reader_t.join();
-
-    cout << "Exit from the main thread." << endl;
     return 1;
 }
