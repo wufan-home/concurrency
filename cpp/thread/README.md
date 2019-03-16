@@ -10,13 +10,17 @@ Show how to create instances. In C++ 11, threads are defined as class but not an
 **deadlock.cpp**: [code](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/deadlock.cpp)<br>
 Give an example of dead lock. The reason is not to call the unlock function before break.
 
+**lock_guard.cpp**: [code]() <br>
+Show the usage of lock_guard.
+
 **mutex.cpp**: [code](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/mutex.cpp) <br>
 Show the usage of mutex. The basic usage of mutex is first to call ```try_lock``` function and then call ```unlock``` when exit from the mutex region. Mutex is also used to create a lock.
 
 **racing_condition.cpp**: [code](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/racing_condition.cpp) <br>
 Give an example of racing condition. The sample output can be found in [output]().
 
-**shared_lock.cpp**: [code]()<br>
+**shared_lock.cpp**: [code]() <br>
+Show the usage of shared_lock.
 
 **unique_lock.cpp**: [code](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/unique_lock.cpp) <br>
 Show the usage of unique lock. Unique lock is the lock which can only be accessed by the thread which claim it.
