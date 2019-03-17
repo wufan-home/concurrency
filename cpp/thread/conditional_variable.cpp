@@ -20,10 +20,10 @@ using namespace std;
 struct ConcurrentList
 {
     explicit ConcurrentList(int length) :
-    ¦   m_shared_memory(vector<int>(length, 0)),
-    ¦   m_count(0),
-    ¦   m_process(true),
-    ¦   m_update(false) {}
+       m_shared_memory(vector<int>(length, 0)),
+       m_count(0),
+       m_process(true),
+       m_update(false) {}
 
     vector<int> m_shared_memory;
     int m_count;
@@ -41,16 +41,16 @@ void thread_add(ConcurrentList &cl, const string &thread_name)
 {
     for(cl.m_count = 0; cl.m_count < number_seq; ++cl.m_count)
     {
-    ¦   unique_lock<mutex> process_lock(cl.m_mutex);
-    ¦   while(!cl.m_process)
-    ¦   ¦   cl.m_cv.wait(process_lock);
+       unique_lock<mutex> process_lock(cl.m_mutex);
+       while(!cl.m_process)
+          cl.m_cv.wait(process_lock);
 
-    ¦   cl.m_shared_memory[2] = cl.m_shared_memory[0] + cl.m_shared_memory[1];
-    ¦
-    ¦   cl.m_update = true;
-    ¦   cl.m_process = false;
+           cl.m_shared_memory[2] = cl.m_shared_memory[0] + cl.m_shared_memory[1];
+    
+       cl.m_update = true;
+       cl.m_process = false;
 
-    ¦   cl.m_cv.notify_one();
+       cl.m_cv.notify_one();
     }
 }
 
@@ -58,20 +58,20 @@ void thread_show_and_update(ConcurrentList &cl, const string &thread_name)
 {
     while(cl.m_count < number_seq)
     {
-    ¦   unique_lock<mutex> update_lock(cl.m_mutex);
+       unique_lock<mutex> update_lock(cl.m_mutex);
 
-    ¦   while(!cl.m_update)
-    ¦   ¦   cl.m_cv.wait(update_lock);
-    ¦
-    ¦   printf(", %d", cl.m_shared_memory[2]);
+       while(!cl.m_update)
+          cl.m_cv.wait(update_lock);
+    
+       printf(", %d", cl.m_shared_memory[2]);
 
-    ¦   cl.m_shared_memory[0] = cl.m_shared_memory[1];
-    ¦   cl.m_shared_memory[1] = cl.m_shared_memory[2];
+       cl.m_shared_memory[0] = cl.m_shared_memory[1];
+       cl.m_shared_memory[1] = cl.m_shared_memory[2];
 
-    ¦   cl.m_update = false;
-    ¦   cl.m_process = true;
+       cl.m_update = false;
+       cl.m_process = true;
 
-    ¦  cl.m_cv.notify_one();
+      cl.m_cv.notify_one();
     }
 }
 
