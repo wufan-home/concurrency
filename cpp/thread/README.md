@@ -2,7 +2,8 @@ In this folder, all code are written in C++ 11.
 
 ## Content
 **condition_variable.cpp**: [code](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/conditional_variable.cpp) <br>
-Show the usage of condition variable. Condition variable is the most used tool to synchronize threads. It should be used together with mutexes or locks.
+Show the usage of condition variable. <br>
+Condition variable is the most used tool to synchronize threads. It should be used together with mutexes or locks.
 
 **create.cpp**: [code](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/create.cpp) <br>
 Show how to create instances. In C++ 11, threads are defined as class but not an integer in the older version of C++. Refer the repository [pthread]().
