@@ -34,3 +34,4 @@ Show the usage of unique lock. Unique lock is the lock which can only be accesse
 
 ## Reference
 Anthony A. Williams, C++ Concurrency in Action: Practical Multithreading, 1ed, Manning Publication, 2012. [Link](https://www.manning.com/books/c-plus-plus-concurrency-in-action-second-edition)<br>
+Anthony A. Williams, C++ Concurrency in Action: Practical Multithreading, 2ed, Manning Publication, 2019. [Link](https://www.manning.com/books/c-plus-plus-concurrency-in-action-second-edition)
