@@ -4,5 +4,5 @@ C++ starts to support multi-thread model natively. Then, we separate our code in
 
 ## Content
 1. pthread
-2. thread
+2. [Thread](https://github.com/wufan-home/concurrency/blob/master/cpp/thread/README.md)
 3. Multi-process
