@@ -21,18 +21,20 @@ struct ConcurrentList
 {
     explicit ConcurrentList(int length) :
     ¦  m_shared_memory(vector<int>(length, 0)),
-    ¦  m_update(false) {}
+    ¦  m_update(false),
+    ¦  m_count(0) {}
 
     vector<int> m_shared_memory;
 
     mutex m_mutex;
     condition_variable m_cv;
     bool m_update;
+    int m_count;
 };
 
 void thread_add(ConcurrentList &cl, const string &thread_name)
 {
-    for(int i = 0; i < 10; ++i)
+    for(; cl.m_count < 10; ++cl.m_count)
     {
     ¦   this_thread::sleep_for(chrono::seconds(1));
     ¦   unique_lock<mutex> process_lock(cl.m_mutex, defer_lock);
@@ -40,6 +42,7 @@ void thread_add(ConcurrentList &cl, const string &thread_name)
     ¦   {
     ¦   ¦   cl.m_shared_memory[2] = cl.m_shared_memory[0] + cl.m_shared_memory[1];
     ¦   ¦   cl.m_update = true;
+    ¦   ¦   process_lock.unlock();
     ¦   ¦   cl.m_cv.notify_one();
     ¦   }
     }
@@ -47,10 +50,11 @@ void thread_add(ConcurrentList &cl, const string &thread_name)
 
 void thread_show_and_update(ConcurrentList &cl, const string &thread_name)
 {
-    while(true)
+    while(cl.m_count < 10)
     {
     ¦  unique_lock<mutex> update_lock(cl.m_mutex);
-        while(!cl.m_update)
+
+    ¦  while(!cl.m_update)
     ¦   ¦ cl.m_cv.wait(update_lock);
 
     ¦  printf("update: %d\n", cl.m_shared_memory[2]);
