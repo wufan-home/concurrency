@@ -18,12 +18,12 @@ public class Server
             }
             else
             {
-                System.out.println("WARNING: The event has not been triggered...");
+                // System.out.println("WARNING: The event has not been triggered...");
             }
         }
         else
         {
-            System.out.println("WARNING: The request queue is empty...");
+            // System.out.println("WARNING: The request queue is empty...");
         }
     }
 

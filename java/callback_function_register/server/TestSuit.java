@@ -1,11 +1,10 @@
 import java.lang.*;
+import java.util.Random;
 
 public class TestSuit
 {
     private static void runEventIsTriggeredBeforeRequestRegisterTest(final Server server, final int size)
     {
-        server.launch();
-        
         server.trigger();
 
         SimulateSendingRequest sim = new SimulateSendingRequest(server, size);
@@ -23,13 +22,10 @@ public class TestSuit
         }
         catch (Exception e)
         { }
-        // server.terminate();
     }
 
     private static void runEventIsTriggeredAfterRequestRegisterTest(final Server server, final int size)
     {
-        server.launch();
-    
         Runnable triggering = () -> {
             try
             {
@@ -58,8 +54,43 @@ public class TestSuit
         }
         catch (Exception e)
         {}
+    }
 
-        // server.terminate();
+    private static void runEventIsTriggeredDuringRequestRegisterTest(final Server server, final int size)
+    {
+        final Random random = new Random();
+
+        final int sleepTime = random.nextInt(1000 * (size - 1)) % (1000 * (size - 1) - 1 + 1) + 1;
+        System.out.println(Integer.toString(sleepTime));
+
+        Runnable triggering = () -> {
+            try
+            {
+                Thread.sleep(sleepTime);
+            }
+            catch (Exception e)
+            {}
+            server.trigger();
+        };
+
+        Thread tTriggering = new Thread(triggering);
+        tTriggering.start();
+
+        SimulateSendingRequest sim = new SimulateSendingRequest(server, size);
+
+        Runnable requestSending = () -> {
+            sim.send();
+        };
+    
+        Thread tRequestSending = new Thread(requestSending);
+        tRequestSending.start();
+
+        try
+        {
+            Thread.sleep(size * 1000);
+        }
+        catch (Exception e)
+        {}
     }
 
     public static void main(String[] args)
@@ -75,8 +106,8 @@ public class TestSuit
 
                 try
                 {
-                    Thread.sleep(300);
-                    System.out.println("Wait for 300 ms...");
+                    Thread.sleep(1);
+                    // System.out.println("Wait for 300 ms...");
                 }
                 catch (Exception e)
                 {
@@ -89,16 +120,20 @@ public class TestSuit
         tExecute.start();
 
         // runEventIsNotTriggeredTest(server, 10);
-        //
-        //
+        
+        System.out.println("");
         System.out.println("");
         System.out.println("runEventIsTriggeredBeforeRequestRegisterTest...");
-
         runEventIsTriggeredBeforeRequestRegisterTest(server, 10);
 
         server.untrigger();
 
-        // runEventIsTriggeredDuringRequestRegisterTest(server, 10);
+        System.out.println("");
+        System.out.println("");
+        System.out.println("runEventIsTriggeredDuringRequestRegisterTest...");
+        runEventIsTriggeredDuringRequestRegisterTest(server, 20);
+
+        server.untrigger();
 
         System.out.println("");
         System.out.println("");
