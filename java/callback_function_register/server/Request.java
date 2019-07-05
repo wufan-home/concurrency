@@ -1,4 +1,6 @@
-public class Request
+// This class define the data format of requests.
+
+public final class Request
 {
     private String mContext;
 
@@ -7,9 +9,14 @@ public class Request
         mContext = context;
     }
 
+    public String getContext()
+    {
+        return mContext;
+    }
+
     public void callback()
     {
-        System.out.println(mContext);
-    } 
+        System.out.println(mContext + " callback function is run.");
+    }
 }
 
