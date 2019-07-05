@@ -46,11 +46,14 @@ public class Server
     public void trigger()
     {
         isEventTriggered = true;
+        System.out.println("The event is triggered...");
     }
 
     public void untrigger()
     {
         isEventTriggered = false;
+
+        System.out.println("The event is untriggered...");
     }
 
     public void launch()

@@ -60,13 +60,13 @@ public class TestSuit
     {
         final Random random = new Random();
 
-        final int sleepTime = random.nextInt(1000 * (size - 1)) % (1000 * (size - 1) - 1 + 1) + 1;
-        System.out.println(Integer.toString(sleepTime));
+        final int round = random.nextInt(size / 2 == 0 ? 1 : size / 2);
+        System.out.println(Integer.toString(round * 1000));
 
         Runnable triggering = () -> {
             try
             {
-                Thread.sleep(sleepTime);
+                Thread.sleep(round * 1000);
             }
             catch (Exception e)
             {}
