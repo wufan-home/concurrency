@@ -4,26 +4,38 @@ public class Server
 {
     private ConcurrentLinkedQueue<Request> requestQueue;
 
-    private boolean isEventTriggered;
+    private volatile boolean isEventTriggered;
 
-    private boolean isServerLaunched;
+    private volatile boolean isServerLaunched;
 
-    public void execute()
+    private void execute()
     {
-        if (!requestQueue.isEmpty())
+        while (true)
         {
-            if (isEventTriggered)
+            if (!requestQueue.isEmpty())
             {
-                requestQueue.poll().callback();
+                if (isEventTriggered)
+                {
+                    requestQueue.poll().callback();
+                }
+                else
+                {
+                    // System.out.println("WARNING: The event has not been triggered...");
+                }
             }
             else
             {
-                // System.out.println("WARNING: The event has not been triggered...");
+                // System.out.println("WARNING: The request queue is empty...");
             }
-        }
-        else
-        {
-            // System.out.println("WARNING: The request queue is empty...");
+
+            if (!isServerLaunched)
+                break;
+
+            try
+            {
+                Thread.sleep(100);
+            }
+            catch (Exception e) {}
         }
     }
 
@@ -61,6 +73,18 @@ public class Server
         System.out.println("The server has been launched...");
 
         isServerLaunched = true;
+        
+        Runnable executing = () -> {
+            execute();
+        };
+
+        try
+        {
+            Thread tExecute = new Thread(executing);
+            tExecute.start();
+            tExecute.join();
+        }
+        catch (InterruptedException e) {}
     }
    
     public void terminate()
